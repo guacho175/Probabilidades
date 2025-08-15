@@ -131,7 +131,7 @@ def boxplot_legible(s: pd.Series, nombre: str, outpath: Path):
     plt.close(fig)
 
 def hist_legible(s: pd.Series, nombre: str, outpath: Path, bins="auto"):
-    """Histograma con etiquetas solo en Top-3 bins y eje X formateado; recorta al p99."""
+    """Histograma con etiquetas solo en Top-k bins (k controlado por TOPK_LABELS) y eje X formateado; recorta al p99."""
     s = s.dropna()
     if s.empty: return
     p99 = np.percentile(s, 99)
@@ -143,7 +143,7 @@ def hist_legible(s: pd.Series, nombre: str, outpath: Path, bins="auto"):
     ax.grid(True, linestyle=":", alpha=.25)
     if s.max() >= 1_000_000:
         ax.xaxis.set_major_formatter(FuncFormatter(money_fmt))
-    # Top-3 bins
+    # Top-k bins
     counts = list(n)
     if any(counts):
         top_idx = sorted(range(len(counts)), key=lambda i: counts[i], reverse=True)[:TOPK_LABELS]
