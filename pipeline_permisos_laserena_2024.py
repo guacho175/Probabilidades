@@ -57,7 +57,7 @@ COMBUSTIBLE_MAP = {
 }
 TRANSMISION_MAP = {
     "mec": "mecánica", "mecanica": "mecánica",
-    "aut": "automática", "automatiza": "automática",
+    "aut": "automática", "automatizada": "automática",
     "automatico": "automática", "automatica": "automática",
     "cvt": "automática"
 }
