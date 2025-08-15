@@ -7,6 +7,7 @@ from pathlib import Path
 import re
 import math
 from datetime import datetime
+import unicodedata
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -50,16 +51,17 @@ MIN_PERMISO_2024  = int(round(UTM_ENERO_2024 * 0.5))  # = 32333
 VALID_SELLOS = {"verde", "amarillo", "rojo"}
 VALID_COMB   = {"bencina", "diésel", "híbrido", "eléctrico", "gnv", "glp"}
 COMBUSTIBLE_MAP = {
-    "benc": "bencina", "gasolina": "bencina",
-    "dies": "diésel", "díes": "diésel", "diesel": "diésel", "d": "diésel",
-    "hibr": "híbrido", "híbr": "híbrido", "hybrid": "híbrido",
-    "electrico": "eléctrico"
+    "benc": "bencina", "gasolina": "bencina", "gaso": "bencina",
+    "dies": "diésel", "diesel": "diésel", "d": "diésel",
+    "hibr": "híbrido", "hibrido": "híbrido", "hybrid": "híbrido",
+    "elec": "eléctrico", "electrico": "eléctrico",
+    "dual": "híbrido", "gasn": "gnv", "gnv": "gnv", "gnc": "gnv",
+    "gas": "glp"
 }
 TRANSMISION_MAP = {
-    "mec": "mecánica", "mecanica": "mecánica",
-    "aut": "automática", "automatizada": "automática",
-    "automatico": "automática", "automatica": "automática",
-    "cvt": "automática"
+    "mec": "mecánica", "mecanica": "mecánica", "man": "mecánica", "manual": "mecánica",
+    "aut": "automática", "automatizada": "automática", "automatico": "automática",
+    "automatica": "automática", "auto": "automática", "cvt": "automática"
 }
 EQUIPADO_MAP = {"norm": "normal"}
 
@@ -68,8 +70,13 @@ LINE = "─" * 80
 # =========================
 # HELPERS
 # =========================
+def _strip_accents(text: str) -> str:
+    """Remove diacritical marks (tildes) from a string."""
+    return "".join(ch for ch in unicodedata.normalize("NFKD", text) if not unicodedata.combining(ch))
+
 def normalize_str(s: pd.Series) -> pd.Series:
-    return (s.astype("string").str.strip().str.replace(r"\s+", " ", regex=True).str.lower())
+    s = s.astype("string").str.strip().str.replace(r"\s+", " ", regex=True).str.lower()
+    return s.map(lambda x: _strip_accents(x) if isinstance(x, str) else x)
 
 def cap_series(s: pd.Series, lo, hi) -> pd.Series:
     return s.clip(lower=lo, upper=hi)
