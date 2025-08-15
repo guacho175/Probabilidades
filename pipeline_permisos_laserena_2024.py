@@ -7,6 +7,7 @@ from pathlib import Path
 import re
 import math
 from datetime import datetime
+import unicodedata
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -50,42 +51,20 @@ MIN_PERMISO_2024  = int(round(UTM_ENERO_2024 * 0.5))  # = 32333
 VALID_SELLOS = {"verde", "amarillo", "rojo"}
 VALID_COMB   = {"bencina", "diésel", "híbrido", "eléctrico", "gnv", "glp"}
 
-# Patrones flexibles para normalizar combustibles y otras variables
-COMBUSTIBLE_MAP = {
-    r"^benc.*": "bencina",
-    r"^gasol.*": "bencina",
-    r"^d[ií]es.*": "diésel",
-    r"^gaso.*": "diésel",
-    r"^h[ií]br.*": "híbrido",
-    r"^hyb.*": "híbrido",
-    r"^dual.*": "gnv",
-    r"^el[eé]c.*": "eléctrico",
-    r"^elect.*": "eléctrico",
-    r"^gnv.*": "gnv",
-    r"^gasn.*": "gnv",
-    r"^gas$": "gnv",
-    r"^glp.*": "glp",
-}
 
-TRANSMISION_MAP = {
-    r"^mec.*": "mecánica",
-    r"^man.*": "mecánica",
-    r"^aut.*": "automática",
-    r"^automat.*": "automática",
-    r"^cvt$": "automática",
-}
-
-EQUIPADO_MAP = {
-    r"^norm.*": "normal",
-}
 
 LINE = "─" * 80
 
 # =========================
 # HELPERS
 # =========================
+def _strip_accents(text: str) -> str:
+    """Remove diacritical marks (tildes) from a string."""
+    return "".join(ch for ch in unicodedata.normalize("NFKD", text) if not unicodedata.combining(ch))
+
 def normalize_str(s: pd.Series) -> pd.Series:
-    return (s.astype("string").str.strip().str.replace(r"\s+", " ", regex=True).str.lower())
+    s = s.astype("string").str.strip().str.replace(r"\s+", " ", regex=True).str.lower()
+    return s.map(lambda x: _strip_accents(x) if isinstance(x, str) else x)
 
 def cap_series(s: pd.Series, lo, hi) -> pd.Series:
     return s.clip(lower=lo, upper=hi)
