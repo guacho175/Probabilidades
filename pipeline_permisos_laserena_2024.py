@@ -117,8 +117,13 @@ def boxplot_legible(s: pd.Series, nombre: str, outpath: Path):
     ax.set_title(f"Boxplot: {nombre}")
     ax.set_xlabel(nombre)
     ax.grid(True, linestyle=":", alpha=.25)
-    # Limitar la vista para leer mejor
-    ax.set_xlim(left=float(s.min()), right=float(p99))
+    # Limitar la vista para leer mejor. Si p99 == min, ampliar un poco para evitar límites idénticos.
+    lo = float(s.min()); hi = float(p99)
+    if math.isclose(lo, hi):
+        span = lo * 0.1 if lo != 0 else 1.0
+        lo -= span
+        hi += span
+    ax.set_xlim(left=lo, right=hi)
     # Anotar mediana
     ax.axvline(med, color="tab:orange", linestyle="--", linewidth=1)
     ax.annotate(f"Mediana: {fmt_int(med)}", (med, 0.98), xycoords=("data", "axes fraction"),
