@@ -49,19 +49,35 @@ MIN_PERMISO_2024  = int(round(UTM_ENERO_2024 * 0.5))  # = 32333
 # Conjuntos y mapeos
 VALID_SELLOS = {"verde", "amarillo", "rojo"}
 VALID_COMB   = {"bencina", "diésel", "híbrido", "eléctrico", "gnv", "glp"}
+
+# Patrones flexibles para normalizar combustibles y otras variables
 COMBUSTIBLE_MAP = {
-    "benc": "bencina", "gasolina": "bencina",
-    "dies": "diésel", "díes": "diésel", "diesel": "diésel", "d": "diésel",
-    "hibr": "híbrido", "híbr": "híbrido", "hybrid": "híbrido",
-    "electrico": "eléctrico"
+    r"^benc.*": "bencina",
+    r"^gasol.*": "bencina",
+    r"^d[ií]es.*": "diésel",
+    r"^gaso.*": "diésel",
+    r"^h[ií]br.*": "híbrido",
+    r"^hyb.*": "híbrido",
+    r"^dual.*": "gnv",
+    r"^el[eé]c.*": "eléctrico",
+    r"^elect.*": "eléctrico",
+    r"^gnv.*": "gnv",
+    r"^gasn.*": "gnv",
+    r"^gas$": "gnv",
+    r"^glp.*": "glp",
 }
+
 TRANSMISION_MAP = {
-    "mec": "mecánica", "mecanica": "mecánica",
-    "aut": "automática", "automatizada": "automática",
-    "automatico": "automática", "automatica": "automática",
-    "cvt": "automática"
+    r"^mec.*": "mecánica",
+    r"^man.*": "mecánica",
+    r"^aut.*": "automática",
+    r"^automat.*": "automática",
+    r"^cvt$": "automática",
 }
-EQUIPADO_MAP = {"norm": "normal"}
+
+EQUIPADO_MAP = {
+    r"^norm.*": "normal",
+}
 
 LINE = "─" * 80
 
@@ -192,11 +208,11 @@ if "fecha_pago" in df.columns:
 
 # Normalizaciones fuertes
 if "combustible" in df:
-    df["combustible_norm"] = df["combustible"].replace(COMBUSTIBLE_MAP)
+    df["combustible_norm"] = df["combustible"].replace(COMBUSTIBLE_MAP, regex=True)
 if "transmision" in df:
-    df["transmision_norm"] = df["transmision"].replace(TRANSMISION_MAP)
+    df["transmision_norm"] = df["transmision"].replace(TRANSMISION_MAP, regex=True)
 if "equipado" in df:
-    df["equipado_norm"] = df["equipado"].replace(EQUIPADO_MAP)
+    df["equipado_norm"] = df["equipado"].replace(EQUIPADO_MAP, regex=True)
 
 # Sello
 if "sello" in df:
