@@ -50,20 +50,8 @@ MIN_PERMISO_2024  = int(round(UTM_ENERO_2024 * 0.5))  # = 32333
 # Conjuntos y mapeos
 VALID_SELLOS = {"verde", "amarillo", "rojo"}
 VALID_COMB   = {"bencina", "diésel", "híbrido", "eléctrico", "gnv", "glp"}
-COMBUSTIBLE_MAP = {
-    "benc": "bencina", "gasolina": "bencina", "gaso": "bencina",
-    "dies": "diésel", "diesel": "diésel", "d": "diésel",
-    "hibr": "híbrido", "hibrido": "híbrido", "hybrid": "híbrido",
-    "elec": "eléctrico", "electrico": "eléctrico",
-    "dual": "híbrido", "gasn": "gnv", "gnv": "gnv", "gnc": "gnv",
-    "gas": "glp"
-}
-TRANSMISION_MAP = {
-    "mec": "mecánica", "mecanica": "mecánica", "man": "mecánica", "manual": "mecánica",
-    "aut": "automática", "automatizada": "automática", "automatico": "automática",
-    "automatica": "automática", "auto": "automática", "cvt": "automática"
-}
-EQUIPADO_MAP = {"norm": "normal"}
+
+
 
 LINE = "─" * 80
 
@@ -199,11 +187,11 @@ if "fecha_pago" in df.columns:
 
 # Normalizaciones fuertes
 if "combustible" in df:
-    df["combustible_norm"] = df["combustible"].replace(COMBUSTIBLE_MAP)
+    df["combustible_norm"] = df["combustible"].replace(COMBUSTIBLE_MAP, regex=True)
 if "transmision" in df:
-    df["transmision_norm"] = df["transmision"].replace(TRANSMISION_MAP)
+    df["transmision_norm"] = df["transmision"].replace(TRANSMISION_MAP, regex=True)
 if "equipado" in df:
-    df["equipado_norm"] = df["equipado"].replace(EQUIPADO_MAP)
+    df["equipado_norm"] = df["equipado"].replace(EQUIPADO_MAP, regex=True)
 
 # Sello
 if "sello" in df:
