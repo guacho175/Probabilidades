@@ -51,6 +51,31 @@ MIN_PERMISO_2024  = int(round(UTM_ENERO_2024 * 0.5))  # = 32333
 VALID_SELLOS = {"verde", "amarillo", "rojo"}
 VALID_COMB   = {"bencina", "diésel", "híbrido", "eléctrico", "gnv", "glp"}
 
+# Mapas de normalización (regex -> valor estándar)
+COMBUSTIBLE_MAP = {
+    r"^gasolina$": "bencina",
+    r"^gas$": "bencina",
+    r"^bencina$": "bencina",
+    r"^petroleo(?: diesel)?$": "diésel",
+    r"^diesel$": "diésel",
+    r"^electrico$": "eléctrico",
+    r"^hibrido$": "híbrido",
+    r"^gnv$": "gnv",
+    r"^glp$": "glp",
+}
+
+TRANSMISION_MAP = {
+    r"^mecanica$": "mecánica",
+    r"^manual$": "mecánica",
+    r"^automat(?:ica)?$": "automática",
+}
+
+EQUIPADO_MAP = {
+    r"^si$": "sí",
+    r"^equipado$": "sí",
+    r"^no$": "no",
+}
+
 
 
 LINE = "─" * 80
