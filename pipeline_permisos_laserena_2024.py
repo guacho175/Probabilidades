@@ -262,7 +262,10 @@ if "placa" in df.columns:
     pat_old = re.compile(r"^[A-Z]{2}-?\d{4}$")  # AA-1234
     pat_new = re.compile(r"^[A-Z]{4}-?\d{2}$")  # BBBB-12
     df["placa_norm"] = df["placa"].astype("string").str.strip().str.upper()
-    bad_placa = ~(df["placa_norm"].str.match(pat_old) | df["placa_norm"].str.match(pat_new))
+    bad_placa = ~(
+        df["placa_norm"].str.match(pat_old, na=False)
+        | df["placa_norm"].str.match(pat_new, na=False)
+    )
     if bad_placa.any():
         df.loc[bad_placa, ["placa","placa_norm","año_permiso"]]\
           .to_csv(OUTPUT_DIR/"error_patente_formato.csv", index=False, encoding="utf-8")
